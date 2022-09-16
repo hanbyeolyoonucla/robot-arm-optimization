@@ -4,22 +4,17 @@ function [T_ST,p_ST] = DefineWorkSpace(maxillaOn,mandibleOn, occusalCutOn, axial
 n = 16;
 
 % number of discretization of the angle
-if occusalCutOn == 1 && axialCutOn == 1
-    % occusal cut & axial cut
-    alpha = linspace(-80*pi/180,30*pi/180,m);
-    beta = linspace(-pi/2,pi/2,m);
-    gamma = linspace(-30*pi/180, 30*pi/180,m);
-elseif occusalCutOn == 1
-    % occusal cut
-    alpha = linspace(-80*pi/180,30*pi/180,m);
-    beta = linspace(-pi/2,pi/2,m);
-    gamma = linspace(-30*pi/180, 30*pi/180,m);
-elseif axialCutOn == 1
-    % axial cut
-    alpha = linspace(-80*pi/180,0,m);
-    beta = linspace(-pi/6,pi/6,m);
-    gamma = linspace(-5*pi/180,0,m);
-end
+if occusalCutOn == 1 || axialCutOn
+% occusal cut
+alpha = linspace(-80*pi/180,30*pi/180,m);
+beta = linspace(-pi/2,pi/2,m);
+gamma = linspace(-30*pi/180, 30*pi/180,m);
+
+% axial cut
+alpha = linspace(-80*pi/180,0,m);
+beta = linspace(-pi/6,pi/6,m);
+gamma = linspace(0, 5*pi/180,m);
+
 
 % position of teeth w.r.t. jaw reference frame
 p_JT = zeros(3,2*n);
