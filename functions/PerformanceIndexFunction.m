@@ -3,7 +3,7 @@ function performance = PerformanceIndexFunction(X)
 % 0. Fixed Parameter
 checkCollisionOn = 1;
 drawCylinderOn = 0;
-occusalCutOn = 1;
+occusalCutOn = 0;
 axialCutOn = 1;
 maxillaOn = 0;
 mandibleOn = 1;
@@ -101,7 +101,7 @@ ISO_lin_min = min(ISO_lin,[],'all');
 ISO_ang_min = min(ISO_ang,[],'all');
 
 % 5. Evaluate Performance
-performance = ISO_lin_sum*ISO_ang_sum*ISO_lin_min*ISO_ang_min...
+performance = -ISO_lin_sum*ISO_ang_sum*ISO_lin_min*ISO_ang_min...
     /(L1^3+L2^3+(sqrt(L3^2+L4^2))^3+L5^3);
 
 end
