@@ -23,15 +23,15 @@ end
 
 % position of teeth w.r.t. jaw reference frame
 p_JT = zeros(3,2*n);
-p_ST = zeros(3,2*n);
+p = zeros(3,2*n);
 p_JT(:,1:n) = csvread('toothpos.csv')';
 
 % rotation matrix
 R = cell(3*m);
-R_JT = rot('x',pi); % original orientation
+R_JT = rot('x',pi)*rot('y',pi/2); % original orientation
 for jj = 1:m
-    R{jj} = R_JT*rot('x',alpha(jj));
-    R{jj+m} = R_JT*rot('z',beta(jj));
+    R{jj} = R_JT*rot('z',alpha(jj));
+    R{jj+m} = R_JT*rot('x',beta(jj));
     R{jj+2*m} = R_JT*rot('y',gamma(jj));
 end
 
@@ -40,13 +40,13 @@ T = cell(2*n,3*m);
 for ii = 1:n
     for jj = 1:3*m
         T{ii,jj} = T_SJ*[R{jj} p_JT(:,ii); zeros(1,3) 1];
-        p_ST(:,ii) = T{ii,jj}(1:3,4);
+        p(:,ii) = T{ii,jj}(1:3,4);
     end
 end
 
 % rotation matrix for lower jaw
 for jj = 1:m
-    R{jj} = R_JT*rot('x',-alpha(jj));
+    R{jj} = R_JT*rot('z',-alpha(jj));
 end
 
 % define screw for mirror the lower jaw
@@ -58,17 +58,20 @@ upper2lowerT = OneScrewtoSE3(S,pi);
 for ii = n+1:2*n
     for jj = 1:3*m
         T{ii,jj} = T_SJ*upper2lowerT*[R{jj} p_JT(:,ii-n); zeros(1,3) 1];
-        p_ST(:,ii) = T{ii,jj}(1:3,4);
+        p(:,ii) = T{ii,jj}(1:3,4);
     end
 end
 
 % maxilla
 if maxillaOn == 1 && mandibleOn == 1
     T_ST = T;
+    p_ST = p;
 elseif maxillaOn == 1
     T_ST = T(1:n,:);
+    p_ST = p(:,1:n);
 elseif mandibleOn == 1
     T_ST = T(n+1:end,:);
+    p_ST = p(:,n+1:end);
 end
 
 end

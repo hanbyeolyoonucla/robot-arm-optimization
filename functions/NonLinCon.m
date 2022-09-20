@@ -11,9 +11,9 @@ z_WS = X(9);
 Ltool = 0.140;
 Lprime = sqrt(L3^2+L4^2);
 
-c(1) = x_WS - L2 - Lprime;
-c(2) = - L2 - Lprime - y_WS;
-c(3) = y_WS - L2 - Lprime;
+c(1) = y_WS - L2 - Lprime;
+c(2) = - L2 - Lprime - x_WS;
+c(3) = x_WS - L2 - Lprime;
 c(4) = L1-L2-Lprime-L5-Ltool - z_WS;
 c(5) = z_WS - (L1+L2+Lprime+L5+Ltool);
 
