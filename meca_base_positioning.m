@@ -7,12 +7,13 @@ tic
 
 checkCollisionOn = 1;
 drawCylinderOn = 0;
-occusalCutOn = 1;
+occusalCutOn = 0;
 axialCutOn = 1;
-maxillaOn = 0;
+maxillaOn = 1;
 mandibleOn = 1;
-n_space = 3;
-n_angle = 5;
+halfOn = 1;
+n_space = 30;
+n_angle = 1;
 
 % Robot's DOF
 n_joint = 6;
@@ -85,7 +86,7 @@ for i_alpha = 1:10
                 R_SJ = rot('z',pi)*rot('y',alpha);
                 p_SJ = [x_cube;y_cube;z_cube];
                 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
-                [T_ST,p_ST] = DefineWorkSpace(maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
+                [T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
                 
                 % 2. Analytic Inverse Kinematics / Check Collision / Compute ISO
                 [n_teeth,n_discrete] = size(T_ST);
@@ -153,7 +154,7 @@ R_SJ = rot('z',pi)*rot('y',alpha);
 p_SJ = [x_cube;y_cube;z_cube];
 p_PR = -R_SJ'*p_SJ;
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
-[T_ST,p_ST] = DefineWorkSpace(maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
+[T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
 % Solve IK for Optimal WS
 q_IK = zeros([n_joint,size(T_ST)]);
@@ -182,7 +183,7 @@ M_EFvis = Tvis*M_EF;
 R_SJ = rot('z',pi);
 p_SJ = Rvis*[x_cube;y_cube;z_cube];
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
-[T_ST,p_ST] = DefineWorkSpace(maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
+[T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
 %% Draw robot in zero position tilted by alpha
 figure(1)
@@ -256,5 +257,5 @@ view(3)
 grid on
 
 %% save result
-save('data/MecaBasePose_220914_mandible_occusal_axial','n_space','n_angle','L1','L2','L3','L4','L5',...
-    'alpha','r_cube','y_cube','z_cube','alpha_space','r_space','y_space','z_space','posPRF','costNZ','p_PR','q_Meca','cost');
+% save('data/MecaBasePose_220914_mandible_occusal_axial','n_space','n_angle','L1','L2','L3','L4','L5',...
+%     'alpha','r_cube','y_cube','z_cube','alpha_space','r_space','y_space','z_space','posPRF','costNZ','p_PR','q_Meca','cost');

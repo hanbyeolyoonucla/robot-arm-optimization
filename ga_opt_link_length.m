@@ -1,5 +1,11 @@
 clc; clear; close all;
 addpath('functions');
+occusalCutOn = 1;
+axialCutOn = 1;
+maxillaOn = 1;
+mandibleOn = 1;
+n_angle = 5;
+halfOn = 1;
 Ltool = 0.140;
 lb = [0.045 0.082 0.100 0.040 0.090 0 -Inf 0.1 -Inf];
 % ub = [Inf Inf Inf Inf Inf pi Inf Inf Inf];
@@ -14,14 +20,6 @@ options = optimoptions('ga','OutputFcn',@gaoutfun);
 tic
 [x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
 toc
-%% save result
-occusalCutOn = 0;
-axialCutOn = 1;
-maxillaOn = 1;
-mandibleOn = 1;
-n_angle = 5;
-save('data/GA_220921','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
-    'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
 
 %% plot result
 
@@ -95,7 +93,7 @@ M_EFvis = Tvis*M_EF;
 R_SJ = rot('z',pi);
 p_SJ = Rvis*[x_cube;y_cube;z_cube];
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
-[T_ST,p_ST] = DefineWorkSpace(maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
+[T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
 % Draw robot in zero position tilted by alpha
 figure(3)
@@ -115,3 +113,11 @@ axis equal;
 view(3)
 grid on
 
+%% save result
+
+mkdir data/220927
+save('data/220927/GA_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+    'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
+saveas(figure(1),'data/220927/GA_fig1.fig')
+saveas(figure(2),'data/220927/GA_fig2.fig')
+saveas(figure(3),'data/220927/GA_fig3.fig')
