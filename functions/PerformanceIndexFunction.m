@@ -72,7 +72,7 @@ ISO_lin_sum = 0;
 ISO_lin = zeros(size(T_ST));
 for ii = 1:n_teeth
     for jj = 1:n_discrete
-        [q_IK(:,ii,jj),eflag(ii,jj),~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,S,M_EF,T_ST{ii,jj});
+        [q_IK(:,ii,jj),eflag(ii,jj),~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST{ii,jj});
         % if no IK exits, break
         if eflag(ii,jj) == 0
             break
@@ -103,14 +103,14 @@ ISO_ang_min = min(ISO_ang,[],'all');
 ISO_lin_avg = ISO_lin_sum/(n_teeth*n_discrete);
 ISO_ang_avg = ISO_lin_sum/(n_teeth*n_discrete);
 
-% 5. Stiffness Normalization
-stiffMax = (0.3^3+0.3^3+(sqrt(0.3^2+0.3^2))^3+0.3^3);
-stiffMin = (0.0455^3+0.082^3+(sqrt(0.1^2+0.04^2))+0.09^3);
-stiff = L1^3+L2^3+(sqrt(L3^2+L4^2))^3+L5^3;
-stiffNormalized = (stiffMax - stiff) / (stiffMax - stiffMin);
+% Stiffness Normalization
+stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
+
+% Manipulability
+manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
 
 % 5. Evaluate Performance
-performance = -ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min...
-    *stiffNormalized;
+performance = [-manipulability -stiffNormalized];
+% performance = -manipulability*stiffNormalized;
 
 end

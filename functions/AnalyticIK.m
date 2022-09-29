@@ -1,9 +1,9 @@
-function [q, eflag, p_SW_log] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,S,M_EF,T_ST)
+function [q, eflag, p_SW_log] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST)
 
     % find wrist position
     offsetAngle = atan2(L4,L3);
     L34 = sqrt(L3^2+L4^2);
-    p_TW = rot('y',-103*pi/180)*[-L5-Ltool;0;0];
+    p_TW = rot('y',-alphatool-pi/2)*[L5+Ltool;0;0];
     p_SW = T_ST*[p_TW;1]; % 4x1 vector
     p_SW_log = p_SW(1:3); % 3x1 position vector
     p_SW = p_SW_log - [0;0;L1]; % subtract L1 for IK

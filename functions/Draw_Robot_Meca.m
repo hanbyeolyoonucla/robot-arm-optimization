@@ -1,4 +1,4 @@
-function EF_T = Draw_Robot_Meca(S,M,q,EF_w,M_EF,n_joint,JointDiameter,JointLength)
+function EF_T = Draw_Robot_Meca(S,M,q,EF_w,M_EF,Ltool1,n_joint,JointDiameter,JointLength)
 
 % n_joint = 6;
 % JointDiameter = 50;
@@ -26,7 +26,8 @@ end
 
 % End effector position and orientation
 EF_T = POE*M_EF;
-EFafter_p{1} = jointafter_p{6} + POE(1:3,1:3)*[0.100;0;0];
+joint_T{6} = POE*M{6};
+EFafter_p{1} = jointafter_p{6} + joint_T{6}(1:3,1:3)*[Ltool1;0;0];
 EFafter_p{2} = [EF_T(1,4);EF_T(2,4);EF_T(3,4)];
 EFafter_w = POE(1:3,1:3)*EF_w;
 % RayFinder(EFafter_p,RayDiameter,EFafter_w,RayFinderLength)

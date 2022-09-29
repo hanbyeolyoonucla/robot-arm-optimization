@@ -10,9 +10,9 @@ drawCylinderOn = 0;
 occusalCutOn = 0;
 axialCutOn = 1;
 maxillaOn = 1;
-mandibleOn = 1;
+mandibleOn = 0;
 halfOn = 1;
-n_space = 30;
+n_space = 10;
 n_angle = 1;
 
 % Robot's DOF
@@ -98,7 +98,7 @@ for i_alpha = 1:10
                 ISO_lin = zeros(size(T_ST));
                 for ii = 1:n_teeth
                     for jj = 1:n_discrete
-                        [q_IK(:,ii,jj),eflag(ii,jj),~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,S,M_EF,T_ST{ii,jj});
+                        [q_IK(:,ii,jj),eflag(ii,jj),~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST{ii,jj});
                         % if no IK exits, break
                         if eflag(ii,jj) == 0
                             break
@@ -126,10 +126,17 @@ for i_alpha = 1:10
                 end
                 ISO_lin_min = min(ISO_lin,[],'all');
                 ISO_ang_min = min(ISO_ang,[],'all');
+                ISO_lin_avg = ISO_lin_sum/(n_teeth*n_discrete);
+                ISO_ang_avg = ISO_lin_sum/(n_teeth*n_discrete);
+                
+                % Stiffness Normalization
+                stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
+                
+                % Manipulability
+                manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
                 
                 % display for checking iteration status
-                cost(i_alpha,i_x,i_y,i_z) = ISO_lin_sum*ISO_ang_sum*ISO_lin_min*ISO_ang_min...
-                    /(L1^3+L2^3+(sqrt(L3^2+L4^2))^3+L5^3);
+                cost(i_alpha,i_x,i_y,i_z) = manipulability*stiffNormalized;
                 disp([i_alpha,i_x,i_y,i_z])
                 disp(cost(i_alpha,i_x,i_y,i_z))
             end
@@ -150,17 +157,17 @@ z_cube = z_space(idx4);
 %% Visualization of Optimal Solution
 
 % Define Optimal WS
-R_SJ = rot('z',pi)*rot('y',alpha);
-p_SJ = [x_cube;y_cube;z_cube];
-p_PR = -R_SJ'*p_SJ;
-T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
-[T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
+R_SJ1 = rot('z',pi)*rot('y',alpha);
+p_SJ1 = [x_cube;y_cube;z_cube];
+p_PR = -R_SJ1'*p_SJ1;
+T_SJ = [R_SJ1 p_SJ1; zeros(1,3) 1];
+[T_ST,p_ST1] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
 % Solve IK for Optimal WS
 q_IK = zeros([n_joint,size(T_ST)]);
 for ii = 1:n_teeth
     for jj = 1:n_discrete
-        [q_IK(:,ii,jj),~,~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,S,M_EF,T_ST{ii,jj});
+        [q_IK(:,ii,jj),~,~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST{ii,jj});
     end
 end
 q_Meca = q_IK;
@@ -188,7 +195,7 @@ T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 %% Draw robot in zero position tilted by alpha
 figure(1)
 q = zeros(6,1);
-T_EF = Draw_Robot_Meca(Svis,Mvis,q,EF_wvis,M_EFvis,n_joint,JointDiameter,JointLength);
+T_EF = Draw_Robot_Meca(Svis,Mvis,q,EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
 plotTransforms([0,0,0],rotm2quat(Rvis),'FrameSize',0.05)
@@ -207,7 +214,7 @@ grid on
 
 %% Draw robot in random sample IK
 figure(2)
-T_EF = Draw_Robot_Meca(Svis,Mvis,q_IK(:,16,4),EF_wvis,M_EFvis,n_joint,JointDiameter,JointLength);
+T_EF = Draw_Robot_Meca(Svis,Mvis,q_IK(:,16,3),EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
 plotTransforms([0,0,0],rotm2quat(Rvis),'FrameSize',0.05)
@@ -240,14 +247,14 @@ colorbar;
 %% Draw cylinders for check collision
 drawCylinderOn = 1;
 figure(3)
-T_EF = Draw_Robot_Meca(S,M,q_IK(:,1,2),EF_w,M_EF,n_joint,JointDiameter,JointLength);
+T_EF = Draw_Robot_Meca(S,M,q_IK(:,1,2),EF_w,M_EF,Ltool1,n_joint,JointDiameter,JointLength);
 RobotCheckCollision(checkCollisionOn,drawCylinderOn,S,q_IK(:,1,2),n_joint,7,...
                                 L1,L2,L3,L4,L5,Ltool,Ltool1);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
 plotTransforms([0,0,0],rotm2quat(Rvis),'FrameSize',0.05)
-plot3(p_ST(1,:),p_ST(2,:),p_ST(3,:),'r.');
-plotTransforms(p_SJ',rotm2quat(R_SJ),'FrameSize',0.02)
+plot3(p_ST1(1,:),p_ST1(2,:),p_ST1(3,:),'r.');
+plotTransforms(p_SJ1',rotm2quat(R_SJ1),'FrameSize',0.02)
 xlabel('x','FontSize',10);
 ylabel('y','FontSize',10);
 zlabel('z','FontSize',10);
