@@ -13,7 +13,7 @@ stiffMax = 15*0.3^3;
 stiffMin = 0;
 stiffMECA = (0.135^3+2*0.135^3+3*0.038^3+4*0.120^3+5*0.07^3);
 stiffMECANormalized = (stiffMax - stiffMECA) / (stiffMax - stiffMin);
-for ii = 1:length(gapopulationhistory)
+for ii = 1:length(gapopulationhistory(1,1,:))
     L1 = gapopulationhistory(:,1,ii);
     L2 = gapopulationhistory(:,2,ii);
     L3 = gapopulationhistory(:,3,ii);
@@ -26,7 +26,7 @@ end
 figure(5)
 hold on
 grid on
-p1 = plot(stiffnessNormalized(1,1),-gascorehistory(1,1),'r.');
+% p1 = plot(stiffnessNormalized(1,1),-gascorehistory(1,1),'m.');
 plot(stiffnessNormalized,-gascorehistory,'r.');
 p2 = plot(stiffMECANormalized,0.0220,'b*');
 p3 = plot(stiffMECANormalized,0,'g*');

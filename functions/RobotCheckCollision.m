@@ -43,11 +43,11 @@ if checkCollisionOn == 1
         collisionStatus = checkCollision(CYL{7},CYL{i});
         if collisionStatus == 1
             break
-%         else
-%             collisionStatus = checkCollision(CYL{6},CYL{i});
-%         end
-%         if collisionStatus == 1
-%             break
+        else
+            collisionStatus = checkCollision(CYL{6},CYL{i});
+        end
+        if collisionStatus == 1
+            break
         end
     end
     

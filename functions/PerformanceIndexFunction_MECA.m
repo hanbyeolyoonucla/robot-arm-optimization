@@ -3,10 +3,10 @@ function performance = PerformanceIndexFunction_MECA(X)
 % 0. Fixed Parameter
 checkCollisionOn = 1;
 drawCylinderOn = 0;
-occusalCutOn = 0;
+occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
-mandibleOn = 0;
+mandibleOn = 1;
 halfOn = 1;
 n_angle = 5;
 
@@ -111,8 +111,8 @@ stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
 manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
 
 % 5. Evaluate Performance
-% performance = [-manipulability -stiffNormalized];
-performance = -manipulability*stiffNormalized;
+performance = [-manipulability -stiffNormalized];
+% performance = -manipulability*stiffNormalized;
 
 
 end

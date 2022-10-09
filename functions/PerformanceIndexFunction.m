@@ -62,7 +62,9 @@ p_SJ = [x_WS;y_WS;z_WS];
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 [T_ST,~] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
+
 % 4. Analytic Inverse Kinematics / Check Collision / Compute ISO
+stiffNormalized = 0;
 [n_teeth,n_discrete] = size(T_ST);
 q_IK = zeros([n_joint,size(T_ST)]);
 eflag = zeros(size(T_ST));
@@ -75,6 +77,7 @@ for ii = 1:n_teeth
         [q_IK(:,ii,jj),eflag(ii,jj),~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST{ii,jj});
         % if no IK exits, break
         if eflag(ii,jj) == 0
+            stiffNormalized = 0;
             break
         else % if IK exists
             collisionStatus = RobotCheckCollision(checkCollisionOn,drawCylinderOn,S,q_IK(:,ii,jj),n_joint,7,...
@@ -89,12 +92,16 @@ for ii = 1:n_teeth
                 ISO_ang(ii,jj) = SingularValue_ang(end)/SingularValue_ang(1);
                 ISO_lin_sum = ISO_lin_sum + ISO_lin(ii,jj);
                 ISO_ang_sum = ISO_ang_sum + ISO_ang(ii,jj);
+                % Stiffness Normalization
+                stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
             else
+                stiffNormalized = 0;
                 break
             end
         end
     end
     if eflag(ii,jj) == 0 || collisionStatus == 1
+        stiffNormalized = 0;
         break
     end
 end
@@ -103,14 +110,14 @@ ISO_ang_min = min(ISO_ang,[],'all');
 ISO_lin_avg = ISO_lin_sum/(n_teeth*n_discrete);
 ISO_ang_avg = ISO_lin_sum/(n_teeth*n_discrete);
 
-% Stiffness Normalization
-stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
+
 
 % Manipulability
 manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
 
 % 5. Evaluate Performance
-performance = [-manipulability -stiffNormalized];
-% performance = -manipulability*stiffNormalized;
+% performance = [-manipulability -stiffNormalized];
+performance = -manipulability*stiffNormalized;
+% performance = -stiffNormalized;
 
 end

@@ -18,11 +18,11 @@ A = [0 -1 -1 -1 0 0 0 1 0;
     1 -1 -1 -1 -1 0 0 0 -1;
     -1 -1 -1 -1 -1 0 0 0 1];
 b = [0;0;0;Ltool;Ltool];
-% options = optimoptions('ga','OutputFcn',@gaoutfun);
-options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto,'InitialPopulationMatrix',x);
+options = optimoptions('ga','OutputFcn',@gaoutfun,'InitialPopulationMatrix',gapopulationhistory(:,:,end));
+% options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto,'InitialPopulationMatrix',x);
 tic
-% [x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
-[x,fval,exitflag,output] = gamultiobj(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
+[x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
+% [x,fval,exitflag,output] = gamultiobj(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
 toc
 
 %% plot result
@@ -122,7 +122,7 @@ T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 figure(3)
 q = zeros(6,1);
 q(5) = -pi/2;
-T_EF = Draw_Robot_Meca(Svis,Mvis,q_IK(:,1,2),EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
+T_EF = Draw_Robot_Meca(Svis,Mvis,q,EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
 plotTransforms([0,0,0],rotm2quat(Rvis),'FrameSize',0.05)
@@ -138,11 +138,12 @@ grid on
 
 %% save result
 
-mkdir data/220929
-% save('data/220928/GA_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
-%     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
-save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
-    'fval','lb','ub','x');
-saveas(figure(1),'data/220929/GA_pareto_fig.fig')
-% saveas(figure(2),'data/220928/GA_link_fig2.fig')
-% saveas(figure(3),'data/220928/GA_link_fig3.fig')
+mkdir data/220930
+save('data/220930/GA_stiffopt_scratch_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+    'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
+% save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+%     'fval','lb','ub','x');
+% saveas(figure(4),'data/220929/GA_fig1.fig')
+% % saveas(figure(5),'data/220929/GA_paretoDist_fig.fig')
+% saveas(figure(6),'data/220928/GA_fig2.fig')
+% saveas(figure(3),'data/220928/GA_fig3.fig')
