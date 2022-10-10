@@ -7,13 +7,13 @@ tic
 
 checkCollisionOn = 1;
 drawCylinderOn = 0;
-occusalCutOn = 0;
+occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
-mandibleOn = 0;
+mandibleOn = 1;
 halfOn = 1;
 n_space = 10;
-n_angle = 1;
+n_angle = 3;
 
 % Robot's DOF
 n_joint = 6;
@@ -86,7 +86,7 @@ for i_alpha = 1:10
                 R_SJ = rot('z',pi)*rot('y',alpha);
                 p_SJ = [x_cube;y_cube;z_cube];
                 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
-                [T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
+                [T_ST,~] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
                 
                 % 2. Analytic Inverse Kinematics / Check Collision / Compute ISO
                 [n_teeth,n_discrete] = size(T_ST);

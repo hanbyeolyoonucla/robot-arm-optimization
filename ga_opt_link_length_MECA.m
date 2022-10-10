@@ -2,10 +2,10 @@ clc; clear; close all;
 addpath('functions');
 
 % fixed parameter
-occusalCutOn = 0;
+occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
-mandibleOn = 0;
+mandibleOn = 1;
 halfOn = 1;
 n_angle = 5;
 
@@ -120,7 +120,7 @@ T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 figure(3)
 q = zeros(6,1);
 % q(5) = -pi/2;
-T_EF = Draw_Robot_Meca(Svis,Mvis,q_IK(:,1,1),EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
+T_EF = Draw_Robot_Meca(Svis,Mvis,q_IK(:,1,10),EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
 plotTransforms([0,0,0],rotm2quat(Rvis),'FrameSize',0.05)
@@ -136,9 +136,9 @@ grid on
 
 %% save result
 
-mkdir data/220928
-save('data/220928/GA_MECA_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+mkdir data/221010
+save('data/221010/GA_MECA_maxilla_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
-saveas(figure(1),'data/220928/GA_fig1.fig')
-saveas(figure(2),'data/220928/GA_fig2.fig')
-saveas(figure(3),'data/220928/GA_fig3.fig')
+% saveas(figure(1),'data/221008/GA_fig1.fig')
+% saveas(figure(2),'data/221008/GA_fig2.fig')
+% saveas(figure(3),'data/221008/GA_fig3.fig')

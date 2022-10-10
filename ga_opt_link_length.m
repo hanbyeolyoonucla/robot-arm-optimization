@@ -18,7 +18,7 @@ A = [0 -1 -1 -1 0 0 0 1 0;
     1 -1 -1 -1 -1 0 0 0 -1;
     -1 -1 -1 -1 -1 0 0 0 1];
 b = [0;0;0;Ltool;Ltool];
-options = optimoptions('ga','OutputFcn',@gaoutfun,'InitialPopulationMatrix',gapopulationhistory(:,:,end));
+options = optimoptions('ga','OutputFcn',@gaoutfun,'InitialPopulationMatrix',x);
 % options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto,'InitialPopulationMatrix',x);
 tic
 [x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
@@ -138,8 +138,8 @@ grid on
 
 %% save result
 
-mkdir data/220930
-save('data/220930/GA_stiffopt_scratch_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+mkdir data/221008
+save('data/221008/GA_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
 % save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
 %     'fval','lb','ub','x');

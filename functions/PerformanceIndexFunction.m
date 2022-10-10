@@ -117,7 +117,7 @@ manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
 
 % 5. Evaluate Performance
 % performance = [-manipulability -stiffNormalized];
-performance = -manipulability*stiffNormalized;
+performance = -manipulability*(stiffNormalized)^2;
 % performance = -stiffNormalized;
 
 end

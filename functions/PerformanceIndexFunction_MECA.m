@@ -111,8 +111,8 @@ stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
 manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
 
 % 5. Evaluate Performance
-performance = [-manipulability -stiffNormalized];
-% performance = -manipulability*stiffNormalized;
+% performance = [-manipulability -stiffNormalized];
+performance = -manipulability*(stiffNormalized)^2;
 
 
 end

@@ -65,12 +65,12 @@ end
 % maxilla
 if maxillaOn == 1 && mandibleOn == 1
     if halfOn == 1
-%         % half
-%         T_ST = T(n/2+1:n*3/2,:);
-%         p_ST = p(:,n/2+1:n*3/2);
-        % 5,6,7 teeth maxilla
-        T_ST = T(n/2+5:n/2+7,:);
-        p_ST = p(:,n/2+5:n/2+7);
+        % half
+        T_ST = T(n/2+1:n*3/2,:);
+        p_ST = p(:,n/2+1:n*3/2);
+%         % 5,6,7 teeth maxilla
+%         T_ST = T(n/2+5:n/2+7,:);
+%         p_ST = p(:,n/2+5:n/2+7);
 %         % 5,6,7 teeth mandible
 %         T_ST = T(n/2+10:n/2+12,:);
 %         p_ST = p(:,n/2+10:n/2+12);
@@ -79,11 +79,21 @@ if maxillaOn == 1 && mandibleOn == 1
         p_ST = p;
     end    
 elseif maxillaOn == 1
-    T_ST = T(1:n,:);
-    p_ST = p(:,1:n);
+    if halfOn == 1
+        T_ST = T(n/2+1:n,:);
+        p_ST = p(:,n/2+1:n);
+    else
+        T_ST = T(1:n,:);
+        p_ST = p(:,1:n);
+    end
 elseif mandibleOn == 1
-    T_ST = T(n+1:end,:);
-    p_ST = p(:,n+1:end);
+    if halfOn == 1
+        T_ST = T(n+1:n*3/2,:);
+        p_ST = p(:,n+1:n*3/2);
+    else
+        T_ST = T(n+1:end,:);
+        p_ST = p(:,n+1:end);
+    end
 end
 
 end
