@@ -1,3 +1,18 @@
+addpath('functions')
+L1 = 0.135;
+L2 = 0.135;
+L3 = 0.038;
+L4 = 0.120;
+L5 = 0.070;
+Ltool = 0.140;
+Ltool1 = 0.091; %tool offet
+alphatool = -77*pi/180;
+ang_mouthOpen = 20*pi/180;
+alpha = x(1);
+x_cube = x(2);
+y_cube = x(3);
+z_cube = x(4);
+
 %% 0. Forward Kinematics
 % Updating Frequency
 dt = 0.001;
@@ -44,7 +59,7 @@ JointLength = 24/1000;
 % Draw robot in zero position
 figure(1)
 q = zeros(6,1);
-Draw_Robot_Meca(S,M,q,EF_w,M_EF,n_joint,JointDiameter,JointLength);
+Draw_Robot_Meca(S,M,q,EF_w,M_EF,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(EF_q',rotm2quat(M_EF(1:3,1:3)),'FrameSize',0.05)
 plotTransforms([0,0,0],rotm2quat(eye(3)),'FrameSize',0.05)
@@ -65,7 +80,7 @@ n_angleDiscrete = 3;
 ang_mouthOpen = 30*pi/180;
 R_SJ = rot('z',pi/2)*rot('y',alpha);
 % p_SJ = [r_cube;0;z_cube];
-p_SJ = [r_cube;y_cube;z_cube];
+p_SJ = [x_cube;y_cube;z_cube];
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 [T_ST,p_ST] = DefineWorkSpace(n_angleDiscrete,ang_mouthOpen,T_SJ);
 figure(1)

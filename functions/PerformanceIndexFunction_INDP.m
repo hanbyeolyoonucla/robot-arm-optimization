@@ -96,7 +96,7 @@ for ii = 1:n_teeth
                 L1,L2,L3,L4,L5,Ltool,Ltool1);
             collisionStatus_Md = RobotCheckCollision(checkCollisionOn,drawCylinderOn,S,q_IK_Md(:,ii,jj),n_joint,7,...
                 L1,L2,L3,L4,L5,Ltool,Ltool1);
-            if collisionStatus_Mx == 0 || collisionStatus_Md == 0
+            if collisionStatus_Mx == 0 && collisionStatus_Md == 0
                 % Maxilla
                 [J, ~, ~] = AJacobian(S,q_IK_Mx(:,ii,jj),M_EF,n_joint);
                 J_v = J(4:6,:);

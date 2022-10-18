@@ -1,4 +1,4 @@
-function stiffnessNormalized = stiffnessScore(L1,L2,L3,L4,L5)
+function stiffnessNormalized = stiffnessScore(L1, L2, L3, L4, L5)
 
 w = 1:5; % weight on each link
 linkUb = [0.3 0.3 0.3 0.3 0.3];

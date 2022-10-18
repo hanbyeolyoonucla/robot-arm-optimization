@@ -141,8 +141,8 @@ grid on
 
 %% save result
 
-mkdir data/221009
-save('data/221009/GA_data_v2','halfOn','occusalCutOn','axialCutOn','n_angle',...
+mkdir data/221010
+save('data/221010/GA_INDP_stiff_data','halfOn','occusalCutOn','axialCutOn','n_angle',...
     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
 % save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
 %     'fval','lb','ub','x');
