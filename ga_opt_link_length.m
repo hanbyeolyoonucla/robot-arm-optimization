@@ -1,27 +1,26 @@
 
-% clc; clear; close all;
+clc; clear; close all; clear gaoutfun;
 % x_init = gapopulationhistory(1:50,:,219);
 addpath('functions');
 occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
 mandibleOn = 1;
-n_angle = 5;
+n_angle = 10;
 halfOn = 1;
-Ltool = 0.140;
-lb = [0.045 0.082 0.100 0.040 0.090 0 -Inf 0.1 -Inf];
-% ub = [Inf Inf Inf Inf Inf pi Inf Inf Inf];
-ub = [0.3 0.3 0.3 0.3 0.3 pi Inf Inf Inf];
-A = [0 -1 -1 -1 0 0 0 1 0;
-    0 -1 -1 -1 0 0 -1 0 0;
-    0 -1 -1 -1 0 0 1 0 0;
-    1 -1 -1 -1 -1 0 0 0 -1;
-    -1 -1 -1 -1 -1 0 0 0 1];
-b = [0;0;0;Ltool;Ltool];
-options = optimoptions('ga','OutputFcn',@gaoutfun,'InitialPopulationMatrix',x);
+Ltool = 0.144;
+lb = [0.082 0.100 0.040 0.090 -pi/2 -pi/2 -2 -2 -2];
+ub = [0.3 0.3 0.3 0.3 0.3 pi/2 pi/2 2 2 2];
+% A = [0 -1 -1 -1 0 0 0 1 0;
+%     0 -1 -1 -1 0 0 -1 0 0;
+%     0 -1 -1 -1 0 0 1 0 0;
+%     1 -1 -1 -1 -1 0 0 0 -1;
+%     -1 -1 -1 -1 -1 0 0 0 1];
+% b = [0;0;0;Ltool;Ltool];
+options = optimoptions('ga','OutputFcn',@gaoutfun,'PopulationSize',1000);
 % options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto,'InitialPopulationMatrix',x);
 tic
-[x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
+[x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,[],[],[],[],lb,ub,[],options);
 % [x,fval,exitflag,output] = gamultiobj(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
 toc
 
@@ -30,18 +29,19 @@ toc
 % Robot's DOF
 n_joint = 6;
 % fixed parameters
-L1 = x(1);
-L2 = x(2);
-L3 = x(3);
-L4 = x(4);
-L5 = x(5);
-alpha = x(6);
+L1 = 0.064;
+L2 = x(1);
+L3 = x(2);
+L4 = x(3);
+L5 = x(4);
+alpha = x(5);
+beta = x(6);
 x_cube = x(7);
 y_cube = x(8);
 z_cube = x(9);
-Ltool = 0.140;
+Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
-alphatool = -77*pi/180;
+alphatool = -90*pi/180;
 ang_mouthOpen = 20*pi/180;
 
 % 0. Forward Kinematics
@@ -82,7 +82,7 @@ JointDiameter = 20/1000;
 JointLength = 24/1000;
 
 % Define Optimal WS
-R_SJ1 = rot('z',pi)*rot('y',alpha);
+R_SJ1 = rot('z',pi)*rot('y',alpha)*rot('x',beta);
 p_SJ1 = [x_cube;y_cube;z_cube];
 p_PR = -R_SJ1'*p_SJ1;
 T_SJ = [R_SJ1 p_SJ1; zeros(1,3) 1];
@@ -138,8 +138,8 @@ grid on
 
 %% save result
 
-mkdir data/221010
-save('data/221010/GA_stiff2_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+mkdir data/231108
+save('data/231108/GA_stiff2_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
 % save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
 %     'fval','lb','ub','x');

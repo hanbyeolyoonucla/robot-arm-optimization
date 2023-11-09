@@ -6,9 +6,9 @@ n = 16;
 % number of discretization of the angle
 if occusalCutOn == 1 && axialCutOn == 1
     % occusal cut & axial cut
-    yaw = linspace(-80*pi/180,30*pi/180,m);
-    roll = linspace(-pi/2,pi/2,m);
-    pitch = linspace(-5*pi/180, 0*pi/180,m);
+    yaw = linspace(0*pi/180,20*pi/180,m);
+    roll = linspace(-30*pi/180,30*pi/180,m);
+    pitch = linspace(-10*pi/180, 10*pi/180,m);
 elseif occusalCutOn == 1
     % occusal cut
     yaw = linspace(-80*pi/180,30*pi/180,m);
@@ -65,15 +65,15 @@ end
 % maxilla
 if maxillaOn == 1 && mandibleOn == 1
     if halfOn == 1
-%         % half
-%         T_ST = T(n/2+1:n*3/2,:);
-%         p_ST = p(:,n/2+1:n*3/2);
+         % half
+         T_ST = T(n/2+1:n*3/2,:);
+         p_ST = p(:,n/2+1:n*3/2);
 %         % 5,6,7 teeth maxilla & mandible
 %         T_ST = T([n/2+5:n/2+7 n/2+10:n/2+12],:);
 %         p_ST = p(:,[n/2+5:n/2+7 n/2+10:n/2+12]);
-        % 5,6,7 teeth maxilla
-        T_ST = T(n/2+5:n/2+7,:);
-        p_ST = p(:,n/2+5:n/2+7);
+%         % 5,6,7 teeth maxilla
+%         T_ST = T(n/2+5:n/2+7,:);
+%         p_ST = p(:,n/2+5:n/2+7);
 %         % 5,6,7 teeth mandible
 %         T_ST = T(n/2+10:n/2+12,:);
 %         p_ST = p(:,n/2+10:n/2+12);
