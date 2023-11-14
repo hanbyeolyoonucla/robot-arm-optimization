@@ -6,7 +6,7 @@ occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
 mandibleOn = 1;
-n_angle = 10;
+n_angle = 5;
 halfOn = 1;
 Ltool = 0.144;
 lb = [0.082 0.100 0.040 0.090 -pi/2 -pi/2 -2 -2 -2];
@@ -20,6 +20,7 @@ ub = [0.3 0.3 0.3 0.3 0.3 pi/2 pi/2 2 2 2];
 options = optimoptions('ga','OutputFcn',@gaoutfun,'PopulationSize',1000);
 % options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto,'InitialPopulationMatrix',x);
 tic
+rng default
 [x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction,9,[],[],[],[],lb,ub,[],options);
 % [x,fval,exitflag,output] = gamultiobj(@PerformanceIndexFunction,9,A,b,[],[],lb,ub,[],options);
 toc
@@ -100,8 +101,9 @@ q_Meca = q_IK;
 q_Meca(5,:,:) = q_Meca(5,:,:) + pi/2;
 
 % T visualization : rotate the robot base by alpha for visualization
-Rvis = rot('y',alpha);
-Tvis = [Rvis zeros(3,1); zeros(1,3) 1];
+% Rvis = rot('y',alpha);
+% Tvis = [Rvis zeros(3,1); zeros(1,3) 1];
+Tvis = inv(T_SJ);
 Ad_Tvis = AdjointT(Tvis);
 Mvis = cell(n_joint,1);
 temp = reshape(Tvis*[M{:}],[4,4,6]);
@@ -109,25 +111,28 @@ for i = 1:n_joint
     Mvis{i} = temp(:,:,i);
 end
 Svis = Ad_Tvis*S;
-EF_wvis = Rvis*EF_w;
+EF_wvis = Tvis(1:3,1:3)*EF_w;
 M_EFvis = Tvis*M_EF;
 
 % Draw WS to stand upright for visualziation
-R_SJ = rot('z',pi);
-p_SJ = Rvis*[x_cube;y_cube;z_cube];
-T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
+% R_SJ = rot('z',pi);
+% p_SJ = Tvis(1:3,1:3)*[x_cube;y_cube;z_cube];
+% T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
+T_SJ = eye(4);
 [T_ST,p_ST] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
 % Draw robot in zero position tilted by alpha
-figure(3)
-q = zeros(6,1);
-q(5) = -pi/2;
+figure()
+% q = zeros(6,1);
+q = q_IK(:,end,1);
+% q(5) = -pi/2;
 T_EF = Draw_Robot_Meca(Svis,Mvis,q,EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
-plotTransforms([0,0,0],rotm2quat(Rvis),'FrameSize',0.05)
+plotTransforms(Tvis(1:3,4)',rotm2quat(Tvis(1:3,1:3)),'FrameSize',0.05)
 plot3(p_ST(1,:),p_ST(2,:),p_ST(3,:),'r.');
-plotTransforms(p_SJ',rotm2quat(R_SJ),'FrameSize',0.02)
+% plotTransforms(p_SJ',rotm2quat(R_SJ),'FrameSize',0.02)
+plotTransforms([0,0,0],rotm2quat(eye(3)),'FrameSize',0.02)
 xlabel('x','FontSize',10);
 ylabel('y','FontSize',10);
 zlabel('z','FontSize',10);
