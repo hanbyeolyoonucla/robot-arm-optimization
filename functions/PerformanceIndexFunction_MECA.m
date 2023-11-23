@@ -1,5 +1,8 @@
 function performance = PerformanceIndexFunction_MECA(X)
 
+% truncate variables to 1e-3
+X = round(X*1000)/1000;
+
 % 0. Fixed Parameter
 checkCollisionOn = 1;
 drawCylinderOn = 0;
@@ -15,16 +18,21 @@ L2 = 0.135;
 L3 = 0.038;
 L4 = 0.120;
 L5 = 0.070;
-Ltool = 0.140;
+Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
-alphatool = -77*pi/180;
+alphatool = -90*pi/180;
 ang_mouthOpen = 20*pi/180;
+
+weight_m = 1;
+weight_r = 1;
+weight_s = 1;
 
 % 1. Input Varialbes
 alpha = X(1);
-x_WS = X(2);
-y_WS = X(3);
-z_WS = X(4);
+beta = X(2);
+x_WS = X(3);
+y_WS = X(4);
+z_WS = X(5);
 
 % 2. Forward Kinematics
 % Robot's DOF
@@ -58,24 +66,43 @@ EF_q = [L4; 0; L1+L2+L3-L5-Ltool];
 M_EF = [rot('y',alphatool) EF_q;zeros(1,3) 1];
 
 % 3. Define Work Space
-R_SJ = rot('z',pi)*rot('y',alpha);
+R_SJ = rot('z',pi)*rot('y',alpha)*rot('x',beta);
 p_SJ = [x_WS;y_WS;z_WS];
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 [T_ST,~] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
+% check if base is in keep out zone
+T_JS = inv(T_SJ);
+p_JS = T_JS(1:3,4);
+in_keep_out_zone = 0;
+% head constraint
+head = [-0.1 0.23; -0.17 0.17; -0.29 0.08]; % xmin xmax ymin ymax zmin zmax
+body = [-0.31 0; -0.33 0.33;-0.31 0.12]; % xmin xmax ymin ymax zmin zmax
+if (all(p_JS >= head(:,1)) && all(p_JS <= head(:,2))) || (all(p_JS >= body(:,1)) && all(p_JS <= body(:,2)))
+    in_keep_out_zone = 1;
+end
+
 % 4. Analytic Inverse Kinematics / Check Collision / Compute ISO
 [n_teeth,n_discrete] = size(T_ST);
 q_IK = zeros([n_joint,size(T_ST)]);
-eflag = zeros(size(T_ST));
+eflag_IK = 1;
+eflag_collision = 1;
+
+% Manipulability and Singularity
 ISO_ang_sum = 0;
 ISO_ang = zeros(size(T_ST));
 ISO_lin_sum = 0;
 ISO_lin = zeros(size(T_ST));
+
+% Stiffness Normalization
+stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
+
+if in_keep_out_zone == 0
 for ii = 1:n_teeth
     for jj = 1:n_discrete
-        [q_IK(:,ii,jj),eflag(ii,jj),~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST{ii,jj});
+        [q_IK(:,ii,jj),eflag_IK,~] = AnalyticIK(n_joint,L1,L2,L3,L4,L5,Ltool,alphatool,S,M_EF,T_ST{ii,jj});
         % if no IK exits, break
-        if eflag(ii,jj) == 0
+        if eflag_IK == 0
             break
         else % if IK exists
             collisionStatus = RobotCheckCollision(checkCollisionOn,drawCylinderOn,S,q_IK(:,ii,jj),n_joint,7,...
@@ -90,29 +117,31 @@ for ii = 1:n_teeth
                 ISO_ang(ii,jj) = SingularValue_ang(end)/SingularValue_ang(1);
                 ISO_lin_sum = ISO_lin_sum + ISO_lin(ii,jj);
                 ISO_ang_sum = ISO_ang_sum + ISO_ang(ii,jj);
+                
             else
+                eflag_collision = 0;
                 break
             end
         end
     end
-    if eflag(ii,jj) == 0 || collisionStatus == 1
+    if eflag_IK == 0 || eflag_collision == 0
         break
     end
+end
 end
 ISO_lin_min = min(ISO_lin,[],'all');
 ISO_ang_min = min(ISO_ang,[],'all');
 ISO_lin_avg = ISO_lin_sum/(n_teeth*n_discrete);
 ISO_ang_avg = ISO_lin_sum/(n_teeth*n_discrete);
 
-% Stiffness Normalization
-stiffNormalized = stiffnessScore(L1,L2,L3,L4,L5);
+
 
 % Manipulability
-manipulability = ISO_lin_avg*ISO_ang_avg*ISO_lin_min*ISO_ang_min;
+manipulability = ISO_lin_avg*ISO_ang_avg;
+singularity = ISO_lin_min*ISO_ang_min;
 
 % 5. Evaluate Performance
-% performance = [-manipulability -stiffNormalized];
-performance = -manipulability*(stiffNormalized);
+performance = -(manipulability^weight_m)*(singularity^weight_r)*(stiffNormalized^weight_s)*eflag_IK*eflag_collision;
 
 
 end

@@ -1,43 +1,52 @@
 clc; clear; close all;
 addpath('functions');
 
-% fixed parameter
 occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
-mandibleOn = 0;
-halfOn = 1;
+mandibleOn = 1;
 n_angle = 5;
-
-% Meca link length
-L1 = 0.135;
-L2 = 0.135;
-L3 = 0.038;
-L4 = 0.120;
-L5 = 0.070;
+halfOn = 1;
 Ltool = 0.144;
 
-% GA algorithm
-lb = [-pi/2 -pi/2 -1 -1 -1];
-ub = [pi/2 pi/2 1 1 1];
-% rng default
-options = optimoptions('ga','OutputFcn',@gaoutfun_MECA,'PopulationSize',1000);
-% options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto);
+% constraints
+lb = [0.082 0.100 0.040 0.090 -pi/2 -pi/2 -2 -2 -2];
+ub = [0.3 0.3 0.3 0.3 pi/2 pi/2 2 2 2];
+% A = [0 -1 -1 -1 0 0 0 1 0;
+%     0 -1 -1 -1 0 0 -1 0 0;
+%     0 -1 -1 -1 0 0 1 0 0;
+%     1 -1 -1 -1 -1 0 0 0 -1;
+%     -1 -1 -1 -1 -1 0 0 0 1];
+% b = [0;0;0;Ltool;Ltool];
+% options
+% options = optimoptions('pso','HybridFcn',@fmincon)
+hybridoptions = optimset(@fmincon) ;
+options.HybridFcn = {@fmincon, hybridoptions};
+options = psooptimset(@pso);
+options.PopulationSize = 100;
+options.PopInitRange = [lb;ub];
+options.ConstrBoundary = 'soft';
+
 tic
 rng default
-[x,fval,exitflag,output,population,scores] = ga(@PerformanceIndexFunction_MECA,5,[],[],[],[],lb,ub,[],options);
-% [x,fval,exitflag,output] = gamultiobj(@PerformanceIndexFunction_MECA,4,[],[],[],[],lb,ub,[],options);
+nvars = 9;
+[x,fval,exitflag,output,population,scores] = pso(@PerformanceIndexFunction,nvars,[],[],[],[],lb,ub,[],options);
 toc
-%% plot result
+
 
 % Robot's DOF
 n_joint = 6;
 % fixed parameters
-alpha = x(1);
-beta = x(2);
-x_cube = x(3);
-y_cube = x(4);
-z_cube = x(5);
+L1 = 0.064;
+L2 = x(1);
+L3 = x(2);
+L4 = x(3);
+L5 = x(4);
+alpha = x(5);
+beta = x(6);
+x_cube = x(7);
+y_cube = x(8);
+z_cube = x(9);
 Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
 alphatool = -90*pi/180;
@@ -141,9 +150,12 @@ grid on
 
 %% save result
 
-mkdir data/231119
-save('data/231119/GA_MECA_maxilla_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
-    'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
-% saveas(figure(1),'data/221008/GA_fig1.fig')
-% saveas(figure(2),'data/221008/GA_fig2.fig')
-% saveas(figure(3),'data/221008/GA_fig3.fig')
+mkdir data/231114
+save('data/231114/PSO_stiff2_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+    'fval','lb','ub','population','scores','x');
+% save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+%     'fval','lb','ub','x');
+% saveas(figure(4),'data/220929/GA_fig1.fig')
+% % saveas(figure(5),'data/220929/GA_paretoDist_fig.fig')
+% saveas(figure(6),'data/220928/GA_fig2.fig')
+% saveas(figure(3),'data/220928/GA_fig3.fig')

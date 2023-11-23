@@ -10,7 +10,7 @@ n_angle = 5;
 halfOn = 1;
 Ltool = 0.144;
 lb = [0.082 0.100 0.040 0.090 -pi/2 -pi/2 -2 -2 -2];
-ub = [0.3 0.3 0.3 0.3 0.3 pi/2 pi/2 2 2 2];
+ub = [0.3 0.3 0.3 0.3 pi/2 pi/2 2 2 2];
 % A = [0 -1 -1 -1 0 0 0 1 0;
 %     0 -1 -1 -1 0 0 -1 0 0;
 %     0 -1 -1 -1 0 0 1 0 0;
@@ -143,8 +143,8 @@ grid on
 
 %% save result
 
-mkdir data/231108
-save('data/231108/GA_stiff2_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+mkdir data/231121
+save('data/231121/GA_stiff_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
 % save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
 %     'fval','lb','ub','x');

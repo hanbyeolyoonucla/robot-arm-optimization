@@ -1,5 +1,8 @@
 function performance = PerformanceIndexFunction(X)
 
+% truncate variables to 1e-3
+X = round(X*1000)/1000;
+
 % 0. Fixed Parameter
 checkCollisionOn = 1;
 drawCylinderOn = 0;
@@ -13,8 +16,8 @@ Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
 alphatool = -90*pi/180;
 ang_mouthOpen = 20*pi/180;
-weight_m = 1;
-weight_r = 1;
+weight_m = 0.1;
+weight_r = 0.1;
 weight_s = 1;
 
 
