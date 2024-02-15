@@ -23,7 +23,7 @@ ub = [0.3 0.3 0.3 0.3 pi/2 pi/2 2 2 2];
 hybridoptions = optimset(@fmincon) ;
 options.HybridFcn = {@fmincon, hybridoptions};
 options = psooptimset(@pso);
-options.PopulationSize = 100;
+options.PopulationSize = 1000;
 options.PopInitRange = [lb;ub];
 options.ConstrBoundary = 'soft';
 
@@ -150,8 +150,8 @@ grid on
 
 %% save result
 
-mkdir data/231114
-save('data/231114/PSO_stiff2_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+mkdir data/231205
+save('data/231205/PSO_mid_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
     'fval','lb','ub','population','scores','x');
 % save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
 %     'fval','lb','ub','x');

@@ -1,11 +1,11 @@
-clc; clear; close all;
+clc; clear; close all; clear gaoutfun_MECA;
 addpath('functions');
 
 % fixed parameter
 occusalCutOn = 1;
 axialCutOn = 1;
 maxillaOn = 1;
-mandibleOn = 0;
+mandibleOn = 1;
 halfOn = 1;
 n_angle = 5;
 
@@ -18,10 +18,10 @@ L5 = 0.070;
 Ltool = 0.144;
 
 % GA algorithm
-lb = [-pi/2 -pi/2 -1 -1 -1];
-ub = [pi/2 pi/2 1 1 1];
+lb = [-pi/2 -pi/2 -2 -2 -2];
+ub = [pi/2 pi/2 2 2 2];
 % rng default
-options = optimoptions('ga','OutputFcn',@gaoutfun_MECA,'PopulationSize',1000);
+options = optimoptions('ga','OutputFcn',@gaoutfun_MECA,'PopulationSize',1000, 'MaxStallGenerations',2000, 'MaxGenerations',2000);
 % options = optimoptions('gamultiobj','PlotFcn',@gaplotpareto);
 tic
 rng default
@@ -141,8 +141,8 @@ grid on
 
 %% save result
 
-mkdir data/231119
-save('data/231119/GA_MECA_maxilla_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+mkdir data/231218
+save('data/231218/GA_MECA_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
     'fval','lb','ub','population','scores','x','gapopulationhistory','gascorehistory','gabestscorehistory');
 % saveas(figure(1),'data/221008/GA_fig1.fig')
 % saveas(figure(2),'data/221008/GA_fig2.fig')

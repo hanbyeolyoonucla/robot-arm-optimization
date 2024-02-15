@@ -4,20 +4,16 @@ function performance = PerformanceIndexFunction(X)
 X = round(X*1000)/1000;
 
 % 0. Fixed Parameter
-checkCollisionOn = 1;
-drawCylinderOn = 0;
-occusalCutOn = 1;
-axialCutOn = 1;
-maxillaOn = 1;
-mandibleOn = 1;
-halfOn = 1;
+checkCollisionOn = 1; drawCylinderOn = 0;
+occusalCutOn = 1; axialCutOn = 1;
+maxillaOn = 1; mandibleOn = 1; halfOn = 1;
 n_angle = 5;
 Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
 alphatool = -90*pi/180;
 ang_mouthOpen = 20*pi/180;
-weight_m = 0.1;
-weight_r = 0.1;
+weight_m = 1;
+weight_r = 1;
 weight_s = 1;
 
 
@@ -80,6 +76,10 @@ body = [-0.31 0; -0.33 0.33;-0.31 0.12]; % xmin xmax ymin ymax zmin zmax
 if (all(p_JS >= head(:,1)) && all(p_JS <= head(:,2))) || (all(p_JS >= body(:,1)) && all(p_JS <= body(:,2)))
     in_keep_out_zone = 1;
 end
+% on the half side of patient
+if p_JS(2) < 0
+    in_keep_out_zone =1;
+end
 
 % 4. Analytic Inverse Kinematics / Check Collision / Compute ISO
 [n_teeth,n_discrete] = size(T_ST);
@@ -131,7 +131,7 @@ end
 ISO_lin_min = min(ISO_lin,[],'all');
 ISO_ang_min = min(ISO_ang,[],'all');
 ISO_lin_avg = ISO_lin_sum/(n_teeth*n_discrete);
-ISO_ang_avg = ISO_lin_sum/(n_teeth*n_discrete);
+ISO_ang_avg = ISO_ang_sum/(n_teeth*n_discrete);
 
 
 
