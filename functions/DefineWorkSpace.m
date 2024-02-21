@@ -1,10 +1,10 @@
-function [T_ST,p_ST] = DefineWorkSpace(halfOn, maxillaOn,mandibleOn, occusalCutOn, axialCutOn, m,ang_mouthOpen,T_SJ)
+function [T_ST,p_ST] = DefineWorkSpace(halfOn, maxillaOn, mandibleOn, occusalCutOn, axialCutOn, m, ang_mouthOpen, T_SJ)
 
 % number of teeth on one jaw
 n = 16;
 
 % define default yaw
-default_yaw = -60*pi/180;
+default_yaw = -0*pi/180;
 
 % number of discretization of the angle
 if occusalCutOn == 1 && axialCutOn == 1
@@ -65,46 +65,38 @@ for ii = n+1:2*n
     end
 end
 
-% maxilla
+% trimming path requirements
 if maxillaOn == 1 && mandibleOn == 1
     if halfOn == 1
-         % half
          T_ST = T(n/2+1:n*3/2,:);
          p_ST = p(:,n/2+1:n*3/2);
-%         % 5,6,7 teeth maxilla & mandible
-%         T_ST = T([n/2+5:n/2+7 n/2+10:n/2+12],:);
-%         p_ST = p(:,[n/2+5:n/2+7 n/2+10:n/2+12]);
     else
         T_ST = T;
         p_ST = p;
     end    
 elseif maxillaOn == 1
     if halfOn == 1
-%         T_ST = T(n/2+1:n,:);
-%         p_ST = p(:,n/2+1:n);
-%         % 5,6,7 teeth maxilla
-%         T_ST = T(n/2+5:n/2+7,:);
-%         p_ST = p(:,n/2+5:n/2+7);
-        % 6 tooth maxilla
-        T_ST = T(n/2+6,:);
-        p_ST = p(:,n/2+6);
+        T_ST = T(n/2+1:n,:);
+        p_ST = p(:,n/2+1:n);
     else
-%         T_ST = T(1:n,:);
-%         p_ST = p(:,1:n);
-        % 6 tooth maxilla
-        T_ST = T(n/2+6,:);
-        p_ST = p(:,n/2+6);
+        T_ST = T(1:n,:);
+        p_ST = p(:,1:n);
     end
 elseif mandibleOn == 1
     if halfOn == 1
         T_ST = T(n+1:n*3/2,:);
         p_ST = p(:,n+1:n*3/2);
-%         % 5,6,7 teeth mandible
-%         T_ST = T(n/2+10:n/2+12,:);
-%         p_ST = p(:,n/2+10:n/2+12);
     else
         T_ST = T(n+1:end,:);
         p_ST = p(:,n+1:end);
+    end
+elseif maxillaOn == 0 && mandibleOn == 0  % single tooth
+    if halfOn == 1 % maxilla
+        T_ST = T(13,:);
+        p_ST = p(:,13);
+    else % mandible
+        T_ST = T(20,:);
+        p_ST = p(:,20);
     end
 end
 

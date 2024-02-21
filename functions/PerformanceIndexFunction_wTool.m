@@ -54,7 +54,7 @@ EF_q = [L4 + x_EH; 0; L1+L2+L3-L5-z_EH];
 M_EF = [rot('y',alphatool+phi_EH) EF_q;zeros(1,3) 1];
 
 % 3. Define Work Space
-R_SJ = rot('z',pi)*rot('y',alpha)*rot('x',beta);
+R_SJ = rot('z',pi)*rot('y',beta)*rot('x',alpha);
 p_SJ = [x_WS;y_WS;z_WS];
 T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
 [T_ST,~] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);

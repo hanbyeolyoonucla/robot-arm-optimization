@@ -7,30 +7,30 @@ n_angle = 5;
 Ltool = 0.144;
 
 % constraints % X = [L2, L3, L4, BETA, X_WS, Z_WS, X_FT, Z_FT, PHI_FT]
-lb = [0.082 0.100 0.040 0 -2 -2 -0.2 0 -pi/2];
-ub = [0.3 0.3 0.3 pi 2 2 0.2 0.3 pi/2];
+lb = [0.082 0.100 0.040 pi/4 -2 0 -0.3 0 -pi/2];
+ub = [0.5 0.5 0.5 3*pi/4 2 2 0.3 0.5 pi/2];
 % A = [0 -1 -1 -1 0 0 0 1 0;
 %     0 -1 -1 -1 0 0 -1 0 0;
 %     0 -1 -1 -1 0 0 1 0 0;
 %     1 -1 -1 -1 -1 0 0 0 -1;
 %     -1 -1 -1 -1 -1 0 0 0 1];
 % b = [0;0;0;Ltool;Ltool];
+
 % options
-% options = optimoptions('pso','HybridFcn',@fmincon)
-hybridoptions = optimset(@fmincon) ;
-options.HybridFcn = {@fmincon, hybridoptions};
-options = psooptimset(@pso);
-options.PopulationSize = 1000;
-options.PopInitRange = [lb;ub];
-options.ConstrBoundary = 'soft';
+hybridopts = optimoptions('fmincon','OptimalityTolerance',1e-10);
+options = optimoptions('particleswarm','HybridFcn',{'fmincon',hybridopts});
+options.SwarmSize = 1000;
+options.UseParallel = true;
+% options.InertiaRange = [lb;ub];
+% options.ConstrBoundary = 'soft';
 
 tic
 rng default
 nvars = 9;
-[x,fval,exitflag,output,population,scores] = pso(@PerformanceIndexFunction_wTool,nvars,[],[],[],[],lb,ub,[],options);
+[x,fval,exitflag,output,scores] = particleswarm(@PerformanceIndexFunction_wTool,nvars,lb,ub,options);
 toc
 
-
+%%
 % Robot's DOF
 n_joint = 6;
 % fixed parameters
@@ -44,9 +44,9 @@ beta = x(4);
 x_cube = x(5);
 y_cube = 0;
 z_cube = x(6);
-x_FT = x(7);
-z_FT = x(8);
-phi_FT = x(9);
+x_EH = x(7);
+z_EH = x(8);
+phi_EH = x(9);
 Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
 alphatool = -90*pi/180;
@@ -90,7 +90,7 @@ JointDiameter = 20/1000;
 JointLength = 24/1000;
 
 % Define Optimal WS
-R_SJ1 = rot('z',pi)*rot('y',alpha)*rot('x',beta);
+R_SJ1 = rot('z',pi)*rot('y',beta)*rot('x',alpha);
 p_SJ1 = [x_cube;y_cube;z_cube];
 p_PR = -R_SJ1'*p_SJ1;
 T_SJ = [R_SJ1 p_SJ1; zeros(1,3) 1];
@@ -131,8 +131,8 @@ T_SJ = eye(4);
 % Draw robot in zero position tilted by alpha
 figure()
 % q = zeros(6,1);
-q = q_IK(:,end,1);
 % q(5) = -pi/2;
+q = q_IK(:,1,1);
 T_EF = Draw_Robot_Meca(Svis,Mvis,q,EF_wvis,M_EFvis,Ltool1,n_joint,JointDiameter,JointLength);
 hold on
 plotTransforms(T_EF(1:3,4)',rotm2quat(T_EF(1:3,1:3)),'FrameSize',0.05)
@@ -150,9 +150,9 @@ grid on
 
 %% save result
 
-mkdir data/240215
-save('data/240215/PSO_tool_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
-    'fval','lb','ub','population','scores','x');
+mkdir data/240216
+save('data/240216/PSO_tool_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
+    'fval','lb','ub','scores','x');
 % save('data/220929/GA_pareto_data','halfOn','occusalCutOn','axialCutOn','maxillaOn','mandibleOn','n_angle',...
 %     'fval','lb','ub','x');
 % saveas(figure(4),'data/220929/GA_fig1.fig')

@@ -1,4 +1,4 @@
-function performance = PerformanceIndexFunction(X)
+function performance = PerformanceIndexFunction_v2(X)
 
 % truncate variables to 1e-3
 X = round(X*1000)/1000;
@@ -6,19 +6,19 @@ X = round(X*1000)/1000;
 % 0. Fixed Parameter
 checkCollisionOn = 1; drawCylinderOn = 0;
 occusalCutOn = 1; axialCutOn = 1;
-maxillaOn = 0; mandibleOn = 0; halfOn = 1;
+maxillaOn = 1; mandibleOn = 1; halfOn = 0;
 n_angle = 5;
 Ltool = 0.144;
 Ltool1 = 0.091; %tool offet
 alphatool = -90*pi/180;
 ang_mouthOpen = 20*pi/180;
-weight_m = 0.5; weight_r = 0.5; weight_s = 1;
+weight_m = 1; weight_r = 1; weight_s = 1;
 
 % 1. Input Varialbes
 L1 = 0.064;
 L2 = X(1); L3 = X(2); L4 = X(3); L5 = X(4);
 alpha = X(5); beta = X(6);
-x_WS = X(7); y_WS = X(8); z_WS = X(9);
+x_JS = X(7); y_JS = X(8); z_JS = X(9);
 
 % 2. Forward Kinematics
 % Robot's DOF
@@ -52,14 +52,13 @@ EF_q = [L4; 0; L1+L2+L3-L5-Ltool];
 M_EF = [rot('y',alphatool) EF_q;zeros(1,3) 1];
 
 % 3. Define Work Space
-R_SJ = rot('z',pi)*rot('y',beta)*rot('x',alpha);
-p_SJ = [x_WS;y_WS;z_WS];
-T_SJ = [R_SJ p_SJ; zeros(1,3) 1];
+R_JS = rot('z',pi)*rot('y',beta)*rot('x',alpha);
+p_JS = [x_JS;y_JS;z_JS];
+T_JS = [R_JS p_JS; zeros(1,3) 1];
+T_SJ = inv(T_JS);
 [T_ST,~] = DefineWorkSpace(halfOn,maxillaOn,mandibleOn,occusalCutOn, axialCutOn,n_angle,ang_mouthOpen,T_SJ);
 
 % check if base is in keep out zone
-T_JS = inv(T_SJ);
-p_JS = T_JS(1:3,4);
 in_keep_out_zone = 0;
 % head constraint
 head = [-0.1 0.23; -0.17 0.17; -0.29 0.08]; % xmin xmax ymin ymax zmin zmax
@@ -67,10 +66,10 @@ body = [-0.31 0; -0.33 0.33;-0.31 0.12]; % xmin xmax ymin ymax zmin zmax
 if (all(p_JS >= head(:,1)) && all(p_JS <= head(:,2))) || (all(p_JS >= body(:,1)) && all(p_JS <= body(:,2)))
     in_keep_out_zone = 1;
 end
-% on the half side of patient
-if p_JS(2) < 0
-    in_keep_out_zone =1;
-end
+% % on the half side of patient
+% if p_JS(2) < 0
+%     in_keep_out_zone =1;
+% end
 
 % 4. Analytic Inverse Kinematics / Check Collision / Compute ISO
 [n_teeth,n_discrete] = size(T_ST);
